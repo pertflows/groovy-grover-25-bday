@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Groovy Grover's 25th</title>
+<meta name="description" content="Jessie's 25th birthday rave. Saturday, Nov 21: pregame at Taproom Farmingdale, party bus, then Joshwa at 99 Scott in Brooklyn.">
+<meta property="og:title" content="Groovy Grover's Rave to the Grave">
+<meta property="og:description" content="Jessie's 25th. Sat Nov 21. Taproom Farmingdale → party bus → Joshwa at 99 Scott. RSVP with your route.">
+<meta property="og:image" content="assets/flyer.jpg">
+<meta name="theme-color" content="#120709">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Figtree:wght@400;500;600;700&family=Caveat:wght@600&display=swap">
+<style>
+/* Layout: flyer-led hero, then the night as a three-stop route, then a route-picker RSVP. Single dark look, lifted from the flyer. */
+:root {
+  --ink: #120709;          /* velvet-black ground */
+  --velvet: #1e0c10;       /* raised surface */
+  --line: #3a1d23;         /* hairlines */
+  --wine: #8c1c32;         /* the flyer's lettering red */
+  --wine-hi: #b8304b;
+  --bone: #efe6d6;         /* chalk-white scrawl */
+  --muted: #b59f97;
+  --gold: #d9b878;         /* disco-ball champagne */
+  --leopard: #c79a5b;
+  --display: "Permanent Marker", "Marker Felt", "Comic Sans MS", cursive;
+  --hand: "Caveat", "Bradley Hand", cursive;
+  --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+body {
+  margin: 0;
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(140, 28, 50, .28), transparent 60%),
+    radial-gradient(900px 500px at -10% 40%, rgba(217, 184, 120, .07), transparent 60%),
+    var(--ink);
+  color: var(--bone);
+  font: 400 17px/1.55 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; height: auto; display: block; }
+html, body { overflow-x: clip; }
+a { color: var(--gold); }
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, label:focus-within { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-left: max(18px, env(safe-area-inset-left, 0px));
+  padding-right: max(18px, env(safe-area-inset-right, 0px));
+}
+section { padding-block: 56px; }
+
+/* ---------- hero ---------- */
+.hero { padding-block: 28px 40px; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 44px; align-items: center; }
+.flyer {
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px -20px rgba(0,0,0,.8), 0 0 0 1px var(--line);
+  transform: rotate(-1.5deg);
+}
+.hero-copy { min-width: 0; }
+.kicker { font: 600 13px/1 var(--body); letter-spacing: .18em; text-transform: uppercase; color: var(--gold); margin: 0 0 14px; }
+h1 {
+  font: 400 clamp(46px, 7.4vw, 86px)/.92 var(--display);
+  color: var(--wine-hi);
+  margin: 0;
+  text-shadow: 0 0 1px var(--bone), 2px 2px 0 rgba(0,0,0,.6);
+  text-wrap: balance;
+}
+.tag { font: 400 clamp(24px, 3.4vw, 34px)/1.1 var(--display); color: var(--bone); margin: 14px 0 0; transform: rotate(-2deg); transform-origin: left; }
+.when { margin: 30px 0 0; display: flex; flex-wrap: wrap; gap: 10px 26px; align-items: baseline; }
+.when b { font: 700 clamp(22px, 2.6vw, 28px)/1.1 var(--body); }
+.when span { color: var(--muted); }
+.countdown { display: flex; gap: 10px; margin: 24px 0 0; font-variant-numeric: tabular-nums; }
+.countdown div { background: var(--velvet); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; min-width: 66px; text-align: center; }
+.countdown strong { display: block; font: 700 26px/1 var(--body); color: var(--bone); }
+.countdown small { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.cta {
+  display: inline-flex; align-items: center; gap: 10px;
+  margin-top: 30px;
+  background: var(--wine); color: var(--bone);
+  font: 700 17px/1 var(--body); text-decoration: none;
+  padding: 16px 24px; border-radius: 999px;
+  box-shadow: 0 10px 30px -10px rgba(184, 48, 75, .7);
+  transition: transform .15s ease, background .15s ease;
+}
+.cta:hover { background: var(--wine-hi); transform: translateY(-1px); }
+.note-hand { font: 600 22px/1.2 var(--hand); color: var(--leopard); margin: 18px 0 0; }
+
+/* ---------- section heads ---------- */
+.eyebrow { font: 600 13px/1 var(--body); letter-spacing: .18em; text-transform: uppercase; color: var(--gold); margin: 0 0 10px; }
+h2 { font: 400 clamp(34px, 5vw, 50px)/1 var(--display); margin: 0 0 12px; color: var(--bone); text-wrap: balance; }
+.lede { color: var(--muted); max-width: 60ch; margin: 0; }
+
+/* ---------- the night ---------- */
+.route { list-style: none; margin: 36px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; position: relative; }
+.stop { background: var(--velvet); border: 1px solid var(--line); border-radius: 14px; padding: 22px 22px 24px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.stop .time { font: 700 15px/1 var(--body); color: var(--gold); letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+.stop h3 { font: 400 26px/1.05 var(--display); margin: 0; color: var(--wine-hi); }
+.stop p { margin: 0; color: var(--bone); }
+.stop ul { margin: 0; padding-left: 18px; color: var(--muted); }
+.stop .meta { margin-top: auto; padding-top: 6px; font-size: 15px; }
+.stop.bus { background: linear-gradient(160deg, #2a1015, var(--velvet)); border-color: #5a2430; }
+.stop .num { font: 400 15px/1 var(--display); color: var(--muted); }
+
+
+/* ---------- birthday girl ---------- */
+.bday .wrap { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1fr); gap: 48px; align-items: center; }
+.polaroid { background: var(--bone); padding: 14px 14px 56px; border-radius: 3px; transform: rotate(2.5deg); box-shadow: 0 30px 70px -20px rgba(0,0,0,.85); position: relative; max-width: 400px; justify-self: center; }
+.polaroid img { width: 100%; height: auto; aspect-ratio: 3 / 4; object-fit: cover; }
+.polaroid figcaption { position: absolute; left: 0; right: 0; bottom: 12px; text-align: center; font: 600 26px/1 var(--hand); color: #3a1d23; }
+.bday-copy { min-width: 0; }
+.bday-copy p { color: var(--muted); max-width: 52ch; margin: 0 0 14px; }
+.bday-copy .big { font: 400 clamp(26px, 3.6vw, 36px)/1.15 var(--display); color: var(--bone); margin: 18px 0 0; }
+@media (max-width: 860px) { .bday .wrap { grid-template-columns: 1fr; gap: 34px; } .polaroid { max-width: 320px; } }
+
+/* ---------- RSVP ---------- */
+.rsvp-card { margin-top: 32px; background: var(--velvet); border: 1px solid var(--line); border-radius: 18px; padding: clamp(20px, 4vw, 36px); }
+form { display: grid; gap: 26px; }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+legend, .lbl { font: 700 15px/1.2 var(--body); letter-spacing: .04em; margin-bottom: 12px; padding: 0; display: block; color: var(--bone); }
+.lbl small, legend small { font-weight: 400; color: var(--muted); letter-spacing: 0; }
+.plans { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.plan { position: relative; display: flex; flex-direction: column; gap: 6px; padding: 18px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--ink); cursor: pointer; min-width: 0; transition: border-color .15s, background .15s; }
+.plan input { position: absolute; opacity: 0; pointer-events: none; }
+.plan .p-title { font: 400 21px/1.1 var(--display); color: var(--bone); }
+.plan .p-path { font-size: 14px; color: var(--muted); }
+.plan .check { position: absolute; top: 14px; right: 14px; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--muted); }
+.plan:hover { border-color: #6b3540; }
+.plan:has(input:checked) { border-color: var(--wine-hi); background: #2a0f15; }
+.plan:has(input:checked) .check { border-color: var(--wine-hi); background: radial-gradient(circle, var(--wine-hi) 45%, transparent 50%); }
+.row { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 18px; }
+input[type=text], input[type=tel], textarea, select {
+  width: 100%; font: 400 17px/1.3 var(--body); color: var(--bone);
+  background: var(--ink); border: 1.5px solid var(--line); border-radius: 10px; padding: 13px 14px;
+}
+textarea { min-height: 84px; resize: vertical; }
+input::placeholder, textarea::placeholder { color: #7d6a66; }
+.seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.seg label { cursor: pointer; }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg span { display: inline-block; padding: 10px 16px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.seg input:checked + span { border-color: var(--gold); color: var(--ink); background: var(--gold); }
+.ticket-box { border: 1px dashed #5a2430; border-radius: 12px; padding: 16px; }
+.ticket-box p { margin: 10px 0 0; font-size: 15px; color: var(--muted); }
+.submit { justify-self: start; border: 0; cursor: pointer; }
+.submit[disabled] { opacity: .6; cursor: progress; }
+.form-msg { margin: 0; font-weight: 600; }
+.form-msg.err { color: #ff8b9d; }
+.hidden-field { position: absolute; left: -9999px; }
+.done { text-align: center; padding: 18px 0; }
+.done h3 { font: 400 clamp(30px, 5vw, 42px)/1.05 var(--display); color: var(--wine-hi); margin: 0 0 10px; }
+.done p { color: var(--muted); margin: 0 auto; max-width: 46ch; }
+.done .again { margin-top: 18px; background: none; border: 1.5px solid var(--line); color: var(--bone); padding: 11px 18px; border-radius: 999px; font: 600 15px/1 var(--body); cursor: pointer; }
+
+/* ---------- good to know ---------- */
+.faq { margin-top: 30px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 40px; }
+.faq div { padding: 18px 0; border-top: 1px solid var(--line); min-width: 0; }
+.faq dt { font-weight: 700; margin-bottom: 4px; }
+.faq dd { margin: 0; color: var(--muted); }
+
+footer { padding-block: 40px 56px; border-top: 1px solid var(--line); color: var(--muted); font-size: 15px; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+footer .sign { font: 400 22px/1 var(--display); color: var(--wine-hi); }
+
+@media (max-width: 860px) {
+  .hero .wrap { grid-template-columns: 1fr; gap: 30px; }
+  .flyer { max-width: 440px; margin: 0 auto; }
+  .route, .plans { grid-template-columns: 1fr; }
+  .faq { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  body { font-size: 16px; }
+  section { padding-block: 42px; }
+  .row { grid-template-columns: 1fr; }
+  .countdown div { min-width: 0; flex: 1; padding: 9px 4px; }
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <figure class="flyer" style="margin:0">
+      <img src="assets/flyer.jpg" width="1000" height="1500" alt="Groovy Grover's Rave to the Grave flyer: Jessie's 25th birthday rave, a quarter century of chaos. Disco balls, a martini with a leopard bow, and a chrome skull.">
+    </figure>
+    <div class="hero-copy">
+      <p class="kicker">Jessie's 25th birthday rave</p>
+      <h1>Groovy Grover's Rave to the Grave</h1>
+      <p class="tag">A quarter century of chaos</p>
+      <div class="when">
+        <b>Saturday, Nov 21</b>
+        <span>Farmingdale → Brooklyn · 9 PM till late</span>
+      </div>
+      <div class="countdown" id="countdown" aria-label="Time until the pregame starts">
+        <div><strong id="cd-d">–</strong><small>days</small></div>
+        <div><strong id="cd-h">–</strong><small>hrs</small></div>
+        <div><strong id="cd-m">–</strong><small>min</small></div>
+        <div><strong id="cd-s">–</strong><small>sec</small></div>
+      </div>
+      <a class="cta" href="#rsvp">RSVP and pick your route ↓</a>
+      <p class="note-hand">Three ways to join. Tell us which one so we can book the bus.</p>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="night">
+    <div class="wrap">
+      <p class="eyebrow">The night</p>
+      <h2>One night, three stops</h2>
+      <p class="lede">Come for the pregame, ride the bus with us, or meet us in Brooklyn. Any of the three is fine.</p>
+
+      <ol class="route">
+        <li class="stop">
+          <span class="num">Stop 1</span>
+          <span class="time">9:00 – 11:00 PM</span>
+          <h3>Pregame at Taproom Farmingdale</h3>
+          <p>Kick off the night with Jessie on Long Island.</p>
+          <ul>
+            <li>Food platters for everyone, on us</li>
+            <li>Drinks are buy-your-own</li>
+          </ul>
+          <a class="meta" href="https://www.google.com/maps/search/?api=1&query=Taproom+Farmingdale+NY" target="_blank" rel="noopener">Open in Maps ↗</a>
+        </li>
+        <li class="stop bus">
+          <span class="num">Stop 2</span>
+          <span class="time">11:00 PM sharp</span>
+          <h3>Party bus to Brooklyn</h3>
+          <p>We roll out from Taproom straight to 99 Scott.</p>
+          <ul>
+            <li>Seats are limited, so RSVP for the bus</li>
+            <li>Be at Taproom by 10:45 PM</li>
+          </ul>
+          <span class="meta" style="color:var(--muted)">Leaves from Taproom Farmingdale</span>
+        </li>
+        <li class="stop">
+          <span class="num">Stop 3</span>
+          <span class="time">Late</span>
+          <h3>Joshwa at 99 Scott</h3>
+          <p>Dance it out at 99 Scott Ave, Brooklyn.</p>
+          <ul>
+            <li>You need your own ticket to get in</li>
+            <li>Buy early, the price may go up</li>
+          </ul>
+          <a class="meta" href="https://link.dice.fm/1ogUcqVN77b?sharer_id=62cb051ee2434b0001369d02" target="_blank" rel="noopener">Get Joshwa tickets on DICE ↗</a>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="bday" id="jessie">
+    <div class="wrap">
+      <figure class="polaroid" style="margin:0">
+        <img src="assets/jessie.jpg" width="900" height="1200" loading="lazy" alt="Jessie on someone's shoulders in a crowd at a night festival, arms up, red stage lights.">
+        <figcaption>the birthday girl ♡</figcaption>
+      </figure>
+      <div class="bday-copy">
+        <p class="eyebrow">Guest of honor</p>
+        <h2>Jessie turns 25</h2>
+        <p>Usually found on someone's shoulders, drink in hand, front row of the rave. This year, we're bringing the rave to her.</p>
+        <p class="big">A quarter century of chaos. Let's go out the way she'd want: loud.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="rsvp">
+    <div class="wrap">
+      <p class="eyebrow">RSVP</p>
+      <h2>Pick your route</h2>
+      <p class="lede">We need this to book the bus and order the food. Plans changed? Just send it again and we'll use your latest answer.</p>
+
+      <div class="rsvp-card">
+        <form name="rsvp" method="POST" action="/?rsvp=sent#rsvp" data-netlify="true" netlify-honeypot="bot-field" id="rsvp-form">
+          <input type="hidden" name="form-name" value="rsvp">
+          <p class="hidden-field"><label>Leave this empty: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+
+          <fieldset>
+            <legend>How are you joining?</legend>
+            <div class="plans">
+              <label class="plan">
+                <input type="radio" name="route" value="Taproom only" required>
+                <span class="check" aria-hidden="true"></span>
+                <span class="p-title">Taproom only</span>
+                <span class="p-path">Pregame in Farmingdale, 9–11 PM</span>
+              </label>
+              <label class="plan">
+                <input type="radio" name="route" value="Taproom + bus + 99 Scott">
+                <span class="check" aria-hidden="true"></span>
+                <span class="p-title">The whole night</span>
+                <span class="p-path">Taproom → party bus → 99 Scott</span>
+              </label>
+              <label class="plan">
+                <input type="radio" name="route" value="Meeting at 99 Scott">
+                <span class="check" aria-hidden="true"></span>
+                <span class="p-title">Meet you in Brooklyn</span>
+                <span class="p-path">See you at 99 Scott</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="row">
+            <div>
+              <label class="lbl" for="name">Your name</label>
+              <input type="text" id="name" name="name" required maxlength="60" autocomplete="name" placeholder="First and last">
+            </div>
+            <fieldset>
+              <legend>Bringing anyone? <small>(not counting you)</small></legend>
+              <div class="seg">
+                <label><input type="radio" name="plus_ones" value="0" checked><span>Just me</span></label>
+                <label><input type="radio" name="plus_ones" value="1"><span>+1</span></label>
+                <label><input type="radio" name="plus_ones" value="2"><span>+2</span></label>
+                <label><input type="radio" name="plus_ones" value="3"><span>+3</span></label>
+              </div>
+            </fieldset>
+          </div>
+
+          <fieldset class="ticket-box" id="ticket-box" hidden>
+            <legend>Got your Joshwa ticket?</legend>
+            <div class="seg">
+              <label><input type="radio" name="has_ticket" value="Yes"><span>Yes, got it</span></label>
+              <label><input type="radio" name="has_ticket" value="Not yet"><span>Not yet</span></label>
+            </div>
+            <p>You need a ticket to get into 99 Scott. <a href="https://link.dice.fm/1ogUcqVN77b?sharer_id=62cb051ee2434b0001369d02" target="_blank" rel="noopener">Grab one on DICE</a>.</p>
+          </fieldset>
+
+          <div class="row">
+            <div>
+              <label class="lbl" for="phone">Phone <small>(optional, for bus and day-of updates)</small></label>
+              <input type="tel" id="phone" name="phone" maxlength="30" autocomplete="tel" placeholder="(516) 555-0123">
+            </div>
+            <div>
+              <label class="lbl" for="note">Anything else? <small>(optional)</small></label>
+              <textarea id="note" name="note" maxlength="300" placeholder="Dietary needs, running late, birthday wishes…"></textarea>
+            </div>
+          </div>
+
+          <button class="cta submit" type="submit" id="submit">Send my RSVP</button>
+          <p class="form-msg" id="form-msg" role="status" aria-live="polite"></p>
+        </form>
+
+        <div class="done" id="done" hidden>
+          <h3>You're on the list</h3>
+          <p id="done-text">See you Saturday. Wear something worth dancing in.</p>
+          <button class="again" type="button" id="again">Change my answer</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="info">
+    <div class="wrap">
+      <p class="eyebrow">Good to know</p>
+      <h2>Before you go</h2>
+      <dl class="faq">
+        <div><dt>What do I pay for?</dt><dd>Your own drinks at Taproom and your own Joshwa ticket. The food at the pregame is on us.</dd></div>
+        <div><dt>Do I need a ticket?</dt><dd>Only for 99 Scott. Get one on <a href="https://link.dice.fm/1ogUcqVN77b?sharer_id=62cb051ee2434b0001369d02" target="_blank" rel="noopener">DICE</a> before the price goes up. Taproom doesn't need a ticket.</dd></div>
+        <div><dt>When does the bus leave?</dt><dd>11:00 PM from Taproom Farmingdale. Be there by 10:45 so we can do a headcount.</dd></div>
+        <div><dt>What should I wear?</dt><dd>Disco, leopard, wine-red, a little bit of skull. Dress for a rave.</dd></div>
+      </dl>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="sign">Rave to the grave ♡</span>
+    <span>Happy 25th, Jessie.</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // Countdown to the pregame: Sat Nov 21, 2026, 9:00 PM Eastern.
+  var start = new Date("2026-11-21T21:00:00-05:00").getTime();
+  var ids = ["cd-d", "cd-h", "cd-m", "cd-s"].map(function (id) { return document.getElementById(id); });
+  var box = document.getElementById("countdown");
+  function tick() {
+    var ms = start - Date.now();
+    if (ms <= 0) { box.innerHTML = '<div style="flex:1"><strong>It\'s party time</strong><small>see you there</small></div>'; return; }
+    var s = Math.floor(ms / 1000);
+    var v = [Math.floor(s / 86400), Math.floor(s % 86400 / 3600), Math.floor(s % 3600 / 60), s % 60];
+    v.forEach(function (n, i) { ids[i].textContent = i ? String(n).padStart(2, "0") : n; });
+    setTimeout(tick, 1000);
+  }
+  tick();
+
+  // RSVP: show the ticket question only for routes that end at 99 Scott.
+  var form = document.getElementById("rsvp-form");
+  var ticketBox = document.getElementById("ticket-box");
+  var msg = document.getElementById("form-msg");
+  var done = document.getElementById("done");
+  var btn = document.getElementById("submit");
+
+  form.addEventListener("change", function (e) {
+    if (e.target.name !== "route") return;
+    var needsTicket = e.target.value !== "Taproom only";
+    ticketBox.hidden = !needsTicket;
+    if (!needsTicket) form.querySelectorAll('input[name=has_ticket]').forEach(function (r) { r.checked = false; });
+  });
+
+  var doneCopy = {
+    "Taproom only": "See you at Taproom Farmingdale at 9. Food's on us.",
+    "Taproom + bus + 99 Scott": "You've got a seat on the bus. Be at Taproom by 10:45 PM. Don't forget your Joshwa ticket.",
+    "Meeting at 99 Scott": "See you at 99 Scott in Brooklyn. Don't forget your Joshwa ticket."
+  };
+
+  function showDone(route) {
+    document.getElementById("done-text").textContent = doneCopy[route] || "See you Saturday. Wear something worth dancing in.";
+    form.hidden = true;
+    done.hidden = false;
+  }
+
+  if (/rsvp=sent/.test(location.search)) showDone("");
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    msg.textContent = ""; msg.className = "form-msg";
+    var route = (form.querySelector('input[name=route]:checked') || {}).value;
+    if (!route) { msg.textContent = "Pick how you're joining first."; msg.className = "form-msg err"; return; }
+    if (route !== "Taproom only" && !form.querySelector('input[name=has_ticket]:checked')) {
+      msg.textContent = "Let us know if you've got your Joshwa ticket yet."; msg.className = "form-msg err"; return;
+    }
+    btn.disabled = true; btn.textContent = "Sending…";
+    fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(new FormData(form)).toString()
+    }).then(function (res) {
+      if (!res.ok) throw new Error(res.status);
+      showDone(route);
+    }).catch(function () {
+      msg.textContent = "That didn't go through. Check your connection and try again, or text Jessie's crew.";
+      msg.className = "form-msg err";
+    }).finally(function () {
+      btn.disabled = false; btn.textContent = "Send my RSVP";
+    });
+  });
+
+  document.getElementById("again").addEventListener("click", function () {
+    done.hidden = true; form.hidden = false;
+    document.getElementById("name").focus();
+  });
+})();
+</script>
+</body>
+</html>
