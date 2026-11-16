@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Groovy Grover RSVPs</title>
+<meta name="theme-color" content="#120709">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: login card, then headcount tiles over a filterable guest list. Same velvet look as the party page. */
+:root {
+  --ink: #120709; --velvet: #1e0c10; --line: #3a1d23;
+  --wine: #8c1c32; --wine-hi: #b8304b;
+  --bone: #efe6d6; --muted: #b59f97; --gold: #d9b878;
+  --ok: #8fd19e; --warn: #f0b867; --bad: #ff8b9d;
+  --display: "Permanent Marker", "Marker Felt", cursive;
+  --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { overflow-x: clip; }
+body { margin: 0; background: radial-gradient(1000px 500px at 90% -10%, rgba(140,28,50,.25), transparent 60%), var(--ink); color: var(--bone); font: 400 16px/1.5 var(--body); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+.wrap { max-width: 1100px; margin: 0 auto; padding-block: 28px 60px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+a { color: var(--gold); }
+button, input { font: inherit; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+h1 { font: 400 clamp(30px, 5vw, 44px)/1 var(--display); color: var(--wine-hi); margin: 0; }
+.sub { color: var(--muted); margin: 6px 0 0; }
+
+/* login */
+.login { max-width: 380px; margin: 10vh auto 0; background: var(--velvet); border: 1px solid var(--line); border-radius: 18px; padding: 30px 26px; display: grid; gap: 16px; }
+.login h1 { text-align: center; }
+.login p.sub { text-align: center; margin-top: -6px; }
+label { display: grid; gap: 6px; font-weight: 600; font-size: 14px; }
+input[type=text], input[type=password] { width: 100%; color: var(--bone); background: var(--ink); border: 1.5px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 17px; }
+.btn { background: var(--wine); color: var(--bone); border: 0; border-radius: 999px; padding: 13px 20px; font-weight: 700; cursor: pointer; }
+.btn:hover { background: var(--wine-hi); }
+.btn[disabled] { opacity: .6; cursor: progress; }
+.ghost { background: none; border: 1.5px solid var(--line); color: var(--bone); border-radius: 999px; padding: 8px 14px; font-weight: 600; font-size: 14px; cursor: pointer; }
+.ghost:hover { border-color: #6b3540; }
+.err { color: var(--bad); font-weight: 600; margin: 0; min-height: 1.4em; }
+
+/* dashboard */
+.top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 16px; }
+.top .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 26px; }
+.tile { background: var(--velvet); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; min-width: 0; }
+.tile .n { font: 700 38px/1 var(--body); font-variant-numeric: tabular-nums; }
+.tile .l { font-weight: 700; margin-top: 8px; }
+.tile .d { color: var(--muted); font-size: 13px; margin-top: 2px; }
+.tile.bus { border-color: #5a2430; background: linear-gradient(160deg, #2a1015, var(--velvet)); }
+.tile.bus .n { color: var(--gold); }
+
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 30px 0 14px; align-items: center; }
+.chip { border: 1.5px solid var(--line); background: var(--ink); color: var(--bone); border-radius: 999px; padding: 8px 14px; font-weight: 600; font-size: 14px; cursor: pointer; font-variant-numeric: tabular-nums; }
+.chip[aria-pressed="true"] { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+.filters .spacer { flex: 1; }
+.stamp { color: var(--muted); font-size: 13px; }
+
+.table-box { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--velvet); }
+table { width: 100%; border-collapse: collapse; min-width: 760px; }
+th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 700; background: var(--ink); position: sticky; top: 0; }
+tr:last-child td { border-bottom: 0; }
+td.name { font-weight: 700; }
+td.num { font-variant-numeric: tabular-nums; }
+td.note { max-width: 260px; color: var(--muted); white-space: pre-wrap; overflow-wrap: anywhere; }
+.pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+.r-taproom { background: rgba(217,184,120,.15); color: var(--gold); }
+.r-full { background: rgba(184,48,75,.25); color: #ffb3c1; }
+.r-scott { background: rgba(143,209,158,.14); color: var(--ok); }
+.t-yes { color: var(--ok); font-weight: 600; }
+.t-not_yet { color: var(--warn); font-weight: 600; }
+tr.old td { opacity: .45; }
+tr.old td.name::after { content: " · older answer"; font-weight: 400; color: var(--muted); font-size: 13px; }
+.del { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: 13px; text-decoration: underline; padding: 0; }
+.del.sure { color: var(--bad); font-weight: 700; }
+.empty { padding: 40px 16px; text-align: center; color: var(--muted); }
+.legend { color: var(--muted); font-size: 13px; margin-top: 10px; }
+
+@media (max-width: 760px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* phone: cards instead of a wide table */
+@media (max-width: 640px) {
+  table { min-width: 0; }
+  thead { display: none; }
+  tr { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 14px; border-bottom: 1px solid var(--line); }
+  tr:last-child { border-bottom: 0; }
+  td { padding: 0; border: 0; }
+  td.name { grid-column: 1; font-size: 17px; }
+  td.route { grid-column: 2; grid-row: 1; justify-self: end; }
+  td[data-k]::before { content: attr(data-k) ": "; color: var(--muted); font-weight: 400; }
+  td:empty { display: none; }
+  td.note, td.when, td.act { grid-column: 1 / -1; max-width: none; }
+  td.when { font-size: 13px; color: var(--muted); }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <form class="login" id="login" autocomplete="on">
+    <h1>Groovy Grover</h1>
+    <p class="sub">RSVP list for Jessie's 25th</p>
+    <label for="u">Username <input type="text" id="u" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
+    <label for="p">Password <input type="password" id="p" name="password" autocomplete="current-password" required></label>
+    <button class="btn" type="submit" id="login-btn">Log in</button>
+    <p class="err" id="login-err" role="alert"></p>
+  </form>
+
+  <div id="dash" hidden>
+    <div class="top">
+      <div>
+        <h1>Who's coming</h1>
+        <p class="sub">Saturday, Nov 21 · Taproom Farmingdale → party bus → 99 Scott</p>
+      </div>
+      <div class="actions">
+        <button class="ghost" type="button" id="refresh">Refresh</button>
+        <button class="ghost" type="button" id="copy-bus">Copy bus riders</button>
+        <button class="ghost" type="button" id="logout">Log out</button>
+      </div>
+    </div>
+
+    <div class="tiles" aria-live="polite">
+      <div class="tile"><div class="n" id="t-taproom">0</div><div class="l">At Taproom</div><div class="d">Taproom only + whole night</div></div>
+      <div class="tile bus"><div class="n" id="t-bus">0</div><div class="l">Bus seats</div><div class="d">Whole night riders, with +1s</div></div>
+      <div class="tile"><div class="n" id="t-scott">0</div><div class="l">At 99 Scott</div><div class="d">Bus riders + meeting there</div></div>
+      <div class="tile"><div class="n" id="t-noticket">0</div><div class="l">No ticket yet</div><div class="d">Going to 99 Scott, still need one</div></div>
+    </div>
+
+    <div class="filters" role="group" aria-label="Filter by route">
+      <button class="chip" type="button" data-f="all" aria-pressed="true">Everyone <span id="c-all"></span></button>
+      <button class="chip" type="button" data-f="taproom" aria-pressed="false">Taproom only <span id="c-taproom"></span></button>
+      <button class="chip" type="button" data-f="full" aria-pressed="false">Whole night <span id="c-full"></span></button>
+      <button class="chip" type="button" data-f="scott" aria-pressed="false">Meeting at 99 Scott <span id="c-scott"></span></button>
+      <span class="spacer"></span>
+      <span class="stamp" id="stamp"></span>
+    </div>
+
+    <div class="table-box">
+      <table>
+        <thead><tr><th>Name</th><th>Route</th><th>+1s</th><th>Ticket</th><th>Phone</th><th>Note</th><th>When</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="empty" id="empty" hidden>No RSVPs yet. They'll show up here as people respond.</div>
+    </div>
+    <p class="legend">Headcounts include +1s. If someone RSVPs twice under the same name, only their newest answer counts and the older one is faded.</p>
+    <p class="err" id="dash-err" role="alert"></p>
+  </div>
+
+</div>
+
+<script src="../assets/rsvp-config.js"></script>
+<script>
+(function () {
+  var API = window.RSVP_API;
+  var ROUTE = { taproom: "Taproom only", full: "Whole night", scott: "Meeting at 99 Scott" };
+  var TICKET = { yes: "Has ticket", not_yet: "Not yet" };
+  var creds = null, rows = [], filter = "all", timer = null;
+  var $ = function (id) { return document.getElementById(id); };
+
+  function store(v) { try { v ? sessionStorage.setItem("gg-admin", JSON.stringify(v)) : sessionStorage.removeItem("gg-admin"); } catch (e) {} }
+  function saved() { try { return JSON.parse(sessionStorage.getItem("gg-admin")); } catch (e) { return null; } }
+
+  function load() {
+    return API.rpc("bday_admin_list", { p_username: creds.u, p_password: creds.p }).then(function (data) {
+      rows = data || [];
+      $("dash-err").textContent = "";
+      $("stamp").textContent = "Updated " + new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+      render();
+    });
+  }
+
+  function latestFlags() {
+    // rows arrive newest first; the first row seen for a name is the current answer.
+    var seen = {};
+    rows.forEach(function (r) { var k = r.name.trim().toLowerCase(); r._old = !!seen[k]; seen[k] = true; });
+  }
+
+  function render() {
+    latestFlags();
+    var cur = rows.filter(function (r) { return !r._old; });
+    var heads = function (list) { return list.reduce(function (s, r) { return s + 1 + (r.plus_ones || 0); }, 0); };
+    var by = function (k) { return cur.filter(function (r) { return r.route === k; }); };
+    $("t-taproom").textContent = heads(by("taproom")) + heads(by("full"));
+    $("t-bus").textContent = heads(by("full"));
+    $("t-scott").textContent = heads(by("full")) + heads(by("scott"));
+    $("t-noticket").textContent = cur.filter(function (r) { return r.route !== "taproom" && r.has_ticket === "not_yet"; }).length;
+    $("c-all").textContent = "(" + cur.length + ")";
+    ["taproom", "full", "scott"].forEach(function (k) { $("c-" + k).textContent = "(" + by(k).length + ")"; });
+
+    var tb = $("rows"); tb.textContent = "";
+    var shown = rows.filter(function (r) { return filter === "all" || r.route === filter; });
+    $("empty").hidden = shown.length > 0;
+    shown.forEach(function (r) {
+      var tr = document.createElement("tr");
+      if (r._old) tr.className = "old";
+      var cell = function (cls, text, key) { var td = document.createElement("td"); td.className = cls; if (key && text) td.setAttribute("data-k", key); td.textContent = text || ""; tr.appendChild(td); return td; };
+      cell("name", r.name);
+      var rt = cell("route", ""); var pill = document.createElement("span"); pill.className = "pill r-" + r.route; pill.textContent = ROUTE[r.route] || r.route; rt.appendChild(pill);
+      cell("num", r.plus_ones ? "+" + r.plus_ones : "", "Bringing");
+      var tk = cell(r.has_ticket ? "t-" + r.has_ticket : "", r.has_ticket ? TICKET[r.has_ticket] : "", "Ticket");
+      cell("phone", r.phone, "Phone");
+      cell("note", r.note);
+      cell("when", new Date(r.created_at).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }));
+      var act = cell("act", "");
+      var del = document.createElement("button"); del.type = "button"; del.className = "del"; del.textContent = "Remove";
+      del.addEventListener("click", function () {
+        if (!del.classList.contains("sure")) { del.classList.add("sure"); del.textContent = "Tap again to remove"; setTimeout(function () { del.classList.remove("sure"); del.textContent = "Remove"; }, 4000); return; }
+        del.disabled = true; del.textContent = "Removing…";
+        API.rpc("bday_admin_delete", { p_username: creds.u, p_password: creds.p, p_id: r.id }).then(load).catch(function (e) { $("dash-err").textContent = "Couldn't remove that one: " + e.message; del.disabled = false; });
+      });
+      act.appendChild(del);
+      tr.appendChild(act);
+      tb.appendChild(tr);
+    });
+  }
+
+  function showDash() {
+    $("login").hidden = true; $("dash").hidden = false;
+    clearInterval(timer); timer = setInterval(function () { load().catch(function () {}); }, 30000);
+  }
+
+  function logout() {
+    creds = null; rows = []; store(null); clearInterval(timer);
+    $("dash").hidden = true; $("login").hidden = false; $("p").value = ""; $("u").focus();
+  }
+
+  $("login").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var btn = $("login-btn"); btn.disabled = true; btn.textContent = "Checking…"; $("login-err").textContent = "";
+    creds = { u: $("u").value.trim(), p: $("p").value };
+    load().then(function () { store(creds); showDash(); }).catch(function (err) {
+      creds = null;
+      $("login-err").textContent = /wrong username/i.test(err.message) ? "Wrong username or password." : "Couldn't reach the RSVP list. Check your connection and try again.";
+    }).finally(function () { btn.disabled = false; btn.textContent = "Log in"; });
+  });
+
+  $("refresh").addEventListener("click", function () { load().catch(function (e) { $("dash-err").textContent = "Couldn't refresh: " + e.message; }); });
+  $("logout").addEventListener("click", logout);
+  document.querySelectorAll(".chip").forEach(function (c) {
+    c.addEventListener("click", function () {
+      filter = c.getAttribute("data-f");
+      document.querySelectorAll(".chip").forEach(function (x) { x.setAttribute("aria-pressed", x === c ? "true" : "false"); });
+      render();
+    });
+  });
+  $("copy-bus").addEventListener("click", function () {
+    var list = rows.filter(function (r) { return !r._old && r.route === "full"; })
+      .map(function (r) { return r.name + (r.plus_ones ? " +" + r.plus_ones : "") + (r.phone ? " - " + r.phone : ""); }).join("\n");
+    var b = $("copy-bus");
+    var done = function (t) { b.textContent = t; setTimeout(function () { b.textContent = "Copy bus riders"; }, 2000); };
+    if (!list) return done("No bus riders yet");
+    navigator.clipboard.writeText(list).then(function () { done("Copied"); }, function () { done("Couldn't copy"); });
+  });
+
+  var s = saved();
+  if (s && s.u && s.p) { creds = s; load().then(showDash).catch(function () { logout(); }); }
+})();
+</script>
+</body>
+</html>

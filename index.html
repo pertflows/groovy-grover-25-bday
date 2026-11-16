@@ -30,6 +30,7 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
 body {
@@ -278,27 +279,26 @@ footer .sign { font: 400 22px/1 var(--display); color: var(--wine-hi); }
       <p class="lede">We need this to book the bus and order the food. Plans changed? Just send it again and we'll use your latest answer.</p>
 
       <div class="rsvp-card">
-        <form name="rsvp" method="POST" action="/?rsvp=sent#rsvp" data-netlify="true" netlify-honeypot="bot-field" id="rsvp-form">
-          <input type="hidden" name="form-name" value="rsvp">
-          <p class="hidden-field"><label>Leave this empty: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+        <form id="rsvp-form" novalidate>
+          <p class="hidden-field"><label>Leave this empty: <input name="website" id="website" tabindex="-1" autocomplete="off"></label></p>
 
           <fieldset>
             <legend>How are you joining?</legend>
             <div class="plans">
               <label class="plan">
-                <input type="radio" name="route" value="Taproom only" required>
+                <input type="radio" name="route" value="taproom" required>
                 <span class="check" aria-hidden="true"></span>
                 <span class="p-title">Taproom only</span>
                 <span class="p-path">Pregame in Farmingdale, 9–11 PM</span>
               </label>
               <label class="plan">
-                <input type="radio" name="route" value="Taproom + bus + 99 Scott">
+                <input type="radio" name="route" value="full">
                 <span class="check" aria-hidden="true"></span>
                 <span class="p-title">The whole night</span>
                 <span class="p-path">Taproom → party bus → 99 Scott</span>
               </label>
               <label class="plan">
-                <input type="radio" name="route" value="Meeting at 99 Scott">
+                <input type="radio" name="route" value="scott">
                 <span class="check" aria-hidden="true"></span>
                 <span class="p-title">Meet you in Brooklyn</span>
                 <span class="p-path">See you at 99 Scott</span>
@@ -325,8 +325,8 @@ footer .sign { font: 400 22px/1 var(--display); color: var(--wine-hi); }
           <fieldset class="ticket-box" id="ticket-box" hidden>
             <legend>Got your Joshwa ticket?</legend>
             <div class="seg">
-              <label><input type="radio" name="has_ticket" value="Yes"><span>Yes, got it</span></label>
-              <label><input type="radio" name="has_ticket" value="Not yet"><span>Not yet</span></label>
+              <label><input type="radio" name="has_ticket" value="yes"><span>Yes, got it</span></label>
+              <label><input type="radio" name="has_ticket" value="not_yet"><span>Not yet</span></label>
             </div>
             <p>You need a ticket to get into 99 Scott. <a href="https://link.dice.fm/1ogUcqVN77b?sharer_id=62cb051ee2434b0001369d02" target="_blank" rel="noopener">Grab one on DICE</a>.</p>
           </fieldset>
@@ -376,6 +376,7 @@ footer .sign { font: 400 22px/1 var(--display); color: var(--wine-hi); }
   </div>
 </footer>
 
+<script src="assets/rsvp-config.js"></script>
 <script>
 (function () {
   // Countdown to the pregame: Sat Nov 21, 2026, 9:00 PM Eastern.
@@ -401,15 +402,15 @@ footer .sign { font: 400 22px/1 var(--display); color: var(--wine-hi); }
 
   form.addEventListener("change", function (e) {
     if (e.target.name !== "route") return;
-    var needsTicket = e.target.value !== "Taproom only";
+    var needsTicket = e.target.value !== "taproom";
     ticketBox.hidden = !needsTicket;
     if (!needsTicket) form.querySelectorAll('input[name=has_ticket]').forEach(function (r) { r.checked = false; });
   });
 
   var doneCopy = {
-    "Taproom only": "See you at Taproom Farmingdale at 9. Food's on us.",
-    "Taproom + bus + 99 Scott": "You've got a seat on the bus. Be at Taproom by 10:45 PM. Don't forget your Joshwa ticket.",
-    "Meeting at 99 Scott": "See you at 99 Scott in Brooklyn. Don't forget your Joshwa ticket."
+    "taproom": "See you at Taproom Farmingdale at 9. Food's on us.",
+    "full": "You've got a seat on the bus. Be at Taproom by 10:45 PM. Don't forget your Joshwa ticket.",
+    "scott": "See you at 99 Scott in Brooklyn. Don't forget your Joshwa ticket."
   };
 
   function showDone(route) {
@@ -418,24 +419,29 @@ footer .sign { font: 400 22px/1 var(--display); color: var(--wine-hi); }
     done.hidden = false;
   }
 
-  if (/rsvp=sent/.test(location.search)) showDone("");
-
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     msg.textContent = ""; msg.className = "form-msg";
     var route = (form.querySelector('input[name=route]:checked') || {}).value;
     if (!route) { msg.textContent = "Pick how you're joining first."; msg.className = "form-msg err"; return; }
-    if (route !== "Taproom only" && !form.querySelector('input[name=has_ticket]:checked')) {
+    if (route !== "taproom" && !form.querySelector('input[name=has_ticket]:checked')) {
       msg.textContent = "Let us know if you've got your Joshwa ticket yet."; msg.className = "form-msg err"; return;
     }
     btn.disabled = true; btn.textContent = "Sending…";
-    fetch("/", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams(new FormData(form)).toString()
-    }).then(function (res) {
-      if (!res.ok) throw new Error(res.status);
+    var name = document.getElementById("name").value.trim();
+    if (!name) { msg.textContent = "Add your name so we know who's coming."; msg.className = "form-msg err"; btn.disabled = false; btn.textContent = "Send my RSVP"; return; }
+    if (document.getElementById("website").value) { showDone(route); return; }
+    var val = function (n) { var el = form.querySelector('input[name=' + n + ']:checked'); return el ? el.value : null; };
+    window.RSVP_API.rpc("bday_submit_rsvp", {
+      p_name: name,
+      p_route: route,
+      p_plus_ones: parseInt(val("plus_ones") || "0", 10),
+      p_has_ticket: route === "taproom" ? null : val("has_ticket"),
+      p_phone: document.getElementById("phone").value,
+      p_note: document.getElementById("note").value
+    }).then(function () {
       showDone(route);
+      form.reset(); ticketBox.hidden = true;
     }).catch(function () {
       msg.textContent = "That didn't go through. Check your connection and try again, or text Jessie's crew.";
       msg.className = "form-msg err";
